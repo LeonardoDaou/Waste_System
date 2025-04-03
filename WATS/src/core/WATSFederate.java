@@ -248,8 +248,13 @@ public class WATSFederate extends SEEAbstractFederate implements Observer {
             	sendMessage("WATS","WASS","DECOMPOSITION_COMPLETE_LARS", returned_lars[0]);
             	break;
             case "RECYCLING_REQUEST_LARS":
-            	String mats=wats.reMats(message.getContent());
-            	sendMessage("WATS","WASS","MATERIAL_CHECK",mats);
+            	int ind=wats.search(message.getContent());
+            	if(ind==-99) {
+            		sendMessage("WATS","WASS","RECIPE_CHOICE_ERROR","Recipe does not exist!");
+            	}else {
+	            	String mats=wats.reMats(message.getContent());
+	            	sendMessage("WATS","WASS","MATERIAL_CHECK",mats);
+	            }
             	break;
             case "RECYCLING_EXECUTION_LARS":
             	ConsoleColors.logInfo("[WATS] Got a transformation request. Starting Fabricator!");

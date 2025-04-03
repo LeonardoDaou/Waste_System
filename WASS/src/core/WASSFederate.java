@@ -406,23 +406,31 @@ public class WASSFederate extends SEEAbstractFederate implements Observer {
         	int t=Integer.parseInt(message.getContent());
         	if(t<shared.getWASS().getTrash().size()) {
         		sendWWPMessage("WASS", "WAPS", "PYROLYSIS_REQUEST_LARS", shared.getWASS().getTrash().get(t).toString());
+    		}else if(shared.getWASS().getTrash().size()==0) {
+    			sendWLMessage("WASS","LARS","PYROLOSIS_CHOICE_ERROR", "No trash in storage!");
     		}else {
     			sendWLMessage("WASS","LARS","PYROLOSIS_CHOICE_ERROR", "Choice does not exist!");
     		}
         	break;
         case "DECOMPOSITION_REQUEST_LIST_LARS":
-        	int num=Integer.parseInt(message.getContent().trim());
-        	sendWWTMessage("WASS", "WATS", "DECOMPOSITION_REQUEST_LARS", shared.getWASS().getTrash().get(num).toString());
-    		WASS wass=shared.getWASS();
-    		ArrayList<Trash> t1=wass.getTrash();
-    		t1.remove(num);
-    		wass.settrash(t1);
-    		shared.setWASS(wass);
+        	if(shared.getWASS().getTrash().size()==0) {
+        		sendWLMessage("WASS","LARS","DECOMPOSITION_CHOICE_ERROR","No trash in storage!");
+        	}else if(Integer.parseInt(message.getContent().trim())>shared.getWASS().getTrash().size()-1){
+        		sendWLMessage("WASS","LARS","DECOMPOSITION_CHOICE_ERROR","No trash in storage!");
+        	}else {
+	        	int num=Integer.parseInt(message.getContent().trim());
+	        	sendWWTMessage("WASS", "WATS", "DECOMPOSITION_REQUEST_LARS", shared.getWASS().getTrash().get(num).toString());
+	    		WASS wass=shared.getWASS();
+	    		ArrayList<Trash> t1=wass.getTrash();
+	    		t1.remove(num);
+	    		wass.settrash(t1);
+	    		shared.setWASS(wass);
+	        	}
     		shared.setTaskStarted(true);
         	break;
         case "RECYCLING_REQUEST_LIST_LARS":
-        	sendWWTMessage("WASS","WATS","RECYCLING_REQUEST_LARS",message.getContent());//ask for recipe, check available materials, and then send the appropriate action of either no or fabrications, update LARS in the meantime.
-        	sendWLMessage("WASS","LARS","RECYCLING_REQUEST_MATERIAL_CHECK", "Checking if materials are sufficient");
+        	sendWWTMessage("WASS","WATS","RECYCLING_REQUEST_LARS",message.getContent());
+        	sendWLMessage("WASS","LARS","RECYCLING_REQUEST_MATERIAL_CHECK", "Checking if materials are sufficient and if the recipe requested exists");
         	break;
         default:
         	ConsoleColors.logInfo("[WASS] Unknown message type: " + message.getMessageType());
@@ -433,7 +441,10 @@ public class WASSFederate extends SEEAbstractFederate implements Observer {
     private void handleResponses(WASSWATSMessage message) {
         Scanner scan=new Scanner(System.in);
     	switch (message.getMessageType()) {
-	        case "RECIPE_LIST_WATS":
+	    	case "RECIPE_CHOICE_ERROR":
+	    		sendWLMessage("WASS","LARS","RECIPE_LIST_WASSL", message.getContent());
+	    		break;
+    		case "RECIPE_LIST_WATS":
 	        	sendWLMessage("WASS","LARS","RECIPE_LIST_WASSL", message.getContent());
 	        	break;	
 	    	case "RECIPES":

@@ -194,6 +194,9 @@ public class WASS {
 	
 	public String MaterialstoString() {
 		String s="";
+		if(materials.size()==0) {
+			s="No materials in storage";
+		}else {
 		for(int i=0; i<materials.size();i++) {
 			int a=i+1;
 			if(i!=materials.size()-1) {
@@ -202,17 +205,22 @@ public class WASS {
 				s+=a+". "+materials.get(i).toString();
 			}
 		}
+		}
 		return s;
 	}
 	
 	public String TrashtoString() {
 		String s="";
-		for(int i=0; i<trash.size();i++) {
-			int a=i+1;
-			if(i!=trash.size()-1) {
-				s+=a+". "+trash.get(i).toString()+"\n";
-			}else {
-				s+=a+". "+trash.get(i).toString();
+		if(trash.size()==0) {
+			s="No materials in storage";
+		}else {
+			for(int i=0; i<trash.size();i++) {
+				int a=i+1;
+				if(i!=trash.size()-1) {
+					s+=a+". "+trash.get(i).toString()+"\n";
+				}else {
+					s+=a+". "+trash.get(i).toString();
+				}
 			}
 		}
 		return s;
@@ -220,12 +228,16 @@ public class WASS {
 	
 	public String TPartstoString() {
 		String s="";
-		for(int i=0; i<parts.size();i++) {
-			int a=i+1;
-			if(i!=parts.size()-1) {
-				s+=a+". "+parts.get(i).toString()+"\n";
-			}else {
-				s+=a+". "+parts.get(i).toString();
+		if(parts.size()==0) {
+			s="No materials in storage";
+		}else {
+			for(int i=0; i<parts.size();i++) {
+				int a=i+1;
+				if(i!=parts.size()-1) {
+					s+=a+". "+parts.get(i).toString()+"\n";
+				}else {
+					s+=a+". "+parts.get(i).toString();
+				}
 			}
 		}
 		return s;
