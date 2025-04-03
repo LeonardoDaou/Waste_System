@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<objectModel
+	xmlns="http://standards.ieee.org/IEEE1516-2010" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://standards.ieee.org/IEEE1516-2010 IEEE1516-DIF-2010.xsd">
+
+	<modelIdentification>
+		<name>LARS Module</name>
+		<type>FOM</type>
+		<version>1.0</version>
+		<securityClassification>unclassified</securityClassification>
+		<purpose></purpose>
+		<applicationDomain></applicationDomain>
+		<description>LARS Federate Definition</description>
+		<useLimitation></useLimitation>
+		<other></other>
+	</modelIdentification>
+
+	<objects>
+		<objectClass>
+			<name>HLAobjectRoot</name>
+			<objectClass>
+				<name>PhysicalEntity</name>
+				
+				<objectClass>
+					<name>Lars</name>
+					<sharing>PublishSubscribe</sharing>
+					<semantics>Autonomous Lunar Rover System reporting environmental data</semantics>
+					<attribute>
+						<name>position</name>
+						<dataType>Position</dataType>
+						<updateType>Periodic</updateType>
+						<ownership>NoTransfer</ownership>
+						<sharing>PublishSubscribe</sharing>
+						<transportation>HLAreliable</transportation>
+						<order>Receive</order>
+						<semantics>Current rover position</semantics>
+					</attribute>
+					
+					<attribute>
+						<name>Status</name>
+						<dataType>HLAinteger32BE</dataType>
+						<updateType>Periodic</updateType>
+						<ownership>NoTransfer</ownership>
+						<sharing>PublishSubscribe</sharing>
+						<transportation>HLAreliable</transportation>
+						<order>Receive</order>
+						<semantics>Status of LARS rover</semantics>
+					</attribute>
+					
+				</objectClass>
+			</objectClass>
+		</objectClass>
+	</objects>
+
+	<interactions>
+		<interactionClass>
+			<name>HLAinteractionRoot</name>
+			<interactionClass>
+				<name>FederateMessage</name>
+				<sharing>PublishSubscribe</sharing>
+				<transportation>HLAreliable</transportation>
+				<order>Receive</order>
+				<semantics>General communication between federates</semantics>
+				<parameter>
+					<name>Sender</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Federate sending the message</semantics>
+				</parameter>
+				<parameter>
+					<name>Receiver</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Federate receiving the message</semantics>
+				</parameter>
+				<parameter>
+					<name>MessageType</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Message type identifier</semantics>
+				</parameter>
+				<parameter>
+					<name>Content</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Main content of the message</semantics>
+				</parameter>
+			</interactionClass>
+			<interactionClass>
+				<name>WASSLARSMessage</name>
+				<sharing>PublishSubscribe</sharing>
+				<transportation>HLAreliable</transportation>
+				<order>Receive</order>
+				<semantics>General communication between federates</semantics>
+				<parameter>
+					<name>Sender</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Federate sending the message</semantics>
+				</parameter>
+				<parameter>
+					<name>Receiver</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Federate receiving the message</semantics>
+				</parameter>
+				<parameter>
+					<name>MessageType</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Message type identifier</semantics>
+				</parameter>
+				<parameter>
+					<name>Content</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Main content of the message</semantics>
+				</parameter>
+			</interactionClass>
+		</interactionClass>
+	</interactions>
+
+	<dataTypes>
+		<simpleDataTypes/>
+		<enumeratedDataTypes/>
+		<arrayDataTypes/>
+		<fixedRecordDataTypes/>
+		<variantRecordDataTypes/>
+	</dataTypes>
+	<notes/>
+</objectModel>

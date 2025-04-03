@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<objectModel
+	xmlns:schemaLocation="http://standards.ieee.org/IEEE1516-2010 http://standards.ieee.org/downloads/1516/1516.2-2010"
+	xmlns="http://standards.ieee.org/IEEE1516-2010"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelIdentification>
+        <name>New Module</name>
+        <type>FOM</type>
+        <version>1.0</version>
+        <securityClassification>unclassified</securityClassification>
+        <purpose></purpose>
+		<applicationDomain></applicationDomain>
+		<description>Description of MyModule</description>
+		<useLimitation></useLimitation>
+		<other></other>
+    </modelIdentification>
+    <objects>
+        <objectClass>
+            <name>HLAobjectRoot</name>
+            <objectClass>
+                <name>PhysicalEntity</name>
+                <objectClass>
+                    <name>WAPS</name>
+                    <sharing>PublishSubscribe</sharing>
+					<semantics>Waste Pyrolysis System reporting pyro data</semantics>
+					
+									
+					
+				</objectClass>
+			</objectClass>
+        </objectClass>
+    </objects>
+    <interactions>
+		<interactionClass>
+			<name>HLAinteractionRoot</name>
+			<interactionClass>
+				<name>WASSWAPSMessage</name>
+				<sharing>PublishSubscribe</sharing>
+				<transportation>HLAreliable</transportation>
+				<order>Receive</order>
+				<semantics>General communication between federates</semantics>
+				<parameter>
+					<name>Sender</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Federate sending the message</semantics>
+				</parameter>
+				<parameter>
+					<name>Receiver</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Federate receiving the message</semantics>
+				</parameter>
+				<parameter>
+					<name>MessageType</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Message type identifier</semantics>
+				</parameter>
+				<parameter>
+					<name>Content</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Main content of the message</semantics>
+				</parameter>
+			</interactionClass>
+		</interactionClass>
+	</interactions>
+
+	<dataTypes>
+		<simpleDataTypes/>
+		<enumeratedDataTypes/>
+		<arrayDataTypes/>
+		<fixedRecordDataTypes/>
+		<variantRecordDataTypes/>
+	</dataTypes>
+	<notes/>
+</objectModel>
