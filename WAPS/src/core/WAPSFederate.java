@@ -36,6 +36,7 @@ import hla.rti1516e.exceptions.UnsupportedCallbackModel;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Scanner;
@@ -157,7 +158,7 @@ private static final int MAX_WAIT_TIME = 10000;
 		int choice=0;
 		do{
 				menu();
-				choice=scan.nextInt();
+				choice=readInt();
 				switch(choice){
 				case 1:
 					System.out.println();
@@ -244,6 +245,24 @@ private static final int MAX_WAIT_TIME = 10000;
 		}
 		return s;
 	}
+    
+    public int readInt() {
+    	Scanner scan=new Scanner(System.in);
+    	boolean fine=true;
+    	int n=0;
+    	do {
+        	try {
+        		n=scan.nextInt();
+        		fine=true;
+        	}catch(InputMismatchException e) {
+        		fine=false;
+        		System.out.print("You need to enter a number! Enter again: ");
+        		scan.next();
+        	}
+    	}while(fine!=true);
+    	return n;
+    }
+    
 //
 //	@Override
 //	public void update(Observable arg0, Object arg1) {

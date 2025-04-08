@@ -105,9 +105,8 @@ public class WATS {
 		return i;
 	}
 	
-	public String reMats(String n) {
-		int ind=search(n);
-		return recipes.get(ind).toString();
+	public String reMats(int n) {
+		return recipes.get(n).toString();
 	}
 	
 	

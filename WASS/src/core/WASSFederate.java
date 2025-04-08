@@ -36,6 +36,7 @@ import hla.rti1516e.exceptions.UnsupportedCallbackModel;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Scanner;
@@ -175,24 +176,28 @@ public class WASSFederate extends SEEAbstractFederate implements Observer {
 	}
 	
 	public void wapsProcess() {
-		Scanner scan=new Scanner(System.in);
-		String s="";
-		s+="Which trash do you want to send for pyrolysis?\n";
-		for(int i=0;i<shared.getWASS().getTrash().size();i++) {
-			int a=i+1;
-			s+=a+" "+shared.getWASS().getTrash().get(i).toString()+"\n";
-		}
-		s+="---------------------------------\n";
-		s+="Enter your choice: ";
-		System.out.print(s);
-		lastPrint=s;
-		int tind=scan.nextInt();
-		tind--;
-		if(tind<shared.getWASS().getTrash().size()) {
-			sendWWPMessage("WASS", "WAPS", "PYROLYSIS_REQUEST", shared.getWASS().getTrash().get(tind).toString());
-			shared.setTaskStarted(true);
+		if(shared.getWASS().getTrash().size()==0) {
+			ConsoleColors.logStatus("No trash in storage!");
 		}else {
-			ConsoleColors.logError("Choice does not exist!");
+			Scanner scan=new Scanner(System.in);
+			String s="";
+			s+="Which trash do you want to send for pyrolysis?\n";
+			for(int i=0;i<shared.getWASS().getTrash().size();i++) {
+				int a=i+1;
+				s+=a+" "+shared.getWASS().getTrash().get(i).toString()+"\n";
+			}
+			s+="---------------------------------\n";
+			s+="Enter your choice: ";
+			System.out.print(s);
+			lastPrint=s;
+			int tind=readInt();
+			tind--;
+			if(tind<shared.getWASS().getTrash().size()) {
+				sendWWPMessage("WASS", "WAPS", "PYROLYSIS_REQUEST", shared.getWASS().getTrash().get(tind).toString());
+				shared.setTaskStarted(true);
+			}else {
+				ConsoleColors.logError("Choice does not exist!");
+			}
 		}
 	}
 	
@@ -207,7 +212,7 @@ public class WASSFederate extends SEEAbstractFederate implements Observer {
 		s+="Enter your choice: ";
 		System.out.print(s);
 		lastPrint=s;
-		int cind=scan.nextInt();
+		int cind=readInt();
 		switch(cind) {
 		case 1:
 			System.out.println();
@@ -239,38 +244,74 @@ public class WASSFederate extends SEEAbstractFederate implements Observer {
 		s+="Enter your choice: ";
 		System.out.println(s);
 		lastPrint=s;
-		int pid=scan.nextInt();
+		int pid=readInt();
 		switch(pid) {
 		case 1:
-			String s2="";
-			s2="Choose which trash you want to decompose:\n";
-			for(int i=0;i<shared.getWASS().getTrash().size();i++) {
-    			int a=i+1;
-				s2+=a+" "+shared.getWASS().getTrash().get(i).toString()+"\n";
-    		}
-    		s2+="---------------------------------\n";
-    		s2+="Enter your choice: ";
-    		System.out.println(s2);
-    		lastPrint=s2;
-    		int tindex=scan.nextInt();
-    		tindex--;
-    		if(tindex<shared.getWASS().getTrash().size()) {
-    			sendWWTMessage("WASS", "WATS", "DECOMPOSITION_REQUEST", shared.getWASS().getTrash().get(tindex).toString());
-    			WASS wass=shared.getWASS();
-    			ArrayList<Trash> t=wass.getTrash();
-    			t.remove(tindex);
-    			wass.settrash(t);
-    			shared.setWASS(wass);
-    			shared.setTaskStarted(true);
-    		}else {
-    			ConsoleColors.logError("[ERROR] Choice does not exist!");
-    			shared.setTaskDone(true);
-    		}
+			if(shared.getWASS().getTrash().size()==0) {
+				ConsoleColors.logStatus("No trash in storage!");
+			}else {
+				String s2="";
+				s2="Choose which trash you want to decompose:\n";
+				for(int i=0;i<shared.getWASS().getTrash().size();i++) {
+	    			int a=i+1;
+					s2+=a+" "+shared.getWASS().getTrash().get(i).toString()+"\n";
+	    		}
+	    		s2+="---------------------------------\n";
+	    		s2+="Enter your choice: ";
+	    		System.out.println(s2);
+	    		lastPrint=s2;
+	    		int tindex=readInt();
+	    		tindex--;
+	    		if(tindex<shared.getWASS().getTrash().size()) {
+	    			sendWWTMessage("WASS", "WATS", "DECOMPOSITION_REQUEST", shared.getWASS().getTrash().get(tindex).toString());
+	    			WASS wass=shared.getWASS();
+	    			ArrayList<Trash> t=wass.getTrash();
+	    			t.remove(tindex);
+	    			wass.settrash(t);
+	    			shared.setWASS(wass);
+	    			shared.setTaskStarted(true);
+	    		}else {
+	    			ConsoleColors.logError("[ERROR] Choice does not exist!");
+	    			shared.setTaskDone(true);
+	    		}
+			}
 			break;
 		case 2:
 			sendWWTMessage("WASS", "WATS", "TRANSFORMATION_INFORMATION", "Send all of your recipes and their information");
 			shared.setTaskStarted(true);
 			break;
+		default:
+			ConsoleColors.logWarning("Wrong Choice!");
+			shared.setTaskDone(true);
+		}
+	}
+	
+	public void larsProcess() {
+		Scanner scan=new Scanner(System.in);
+		String s="";
+		s+="Which operation do you want?\n";
+		s+="1. Send materials list\n";
+		s+="2. Send recipe list\n";
+		s+="3. Send waste list\n";
+		s+="4. Send parts list\n";
+		s+="---------------------------------\n";
+		s+="Enter your choice: ";
+		System.out.println(s);
+		lastPrint=s;
+		int pid=readInt();
+		switch(pid) {
+		case 1:
+        	sendWLMessage("WASS","LARS","MATERIALS_LIST_WASS",shared.getWASS().MaterialstoString());
+        	break;
+        case 2:
+        	sendWWTMessage("WASS","WATS","RECIPE_LIST_WASS", "Send all of your recipe information");
+        	break;
+        case 3:
+        	sendWLMessage("WASS","LARS","WASTE_LIST_WASS",shared.getWASS().TrashtoString());
+        	break;
+        case 4:
+        	sendWLMessage("WASS","LARS","PARTS_LIST_WASS",shared.getWASS().TPartstoString());
+        	break;
 		default:
 			ConsoleColors.logWarning("Wrong Choice!");
 			shared.setTaskDone(true);
@@ -284,7 +325,7 @@ public class WASSFederate extends SEEAbstractFederate implements Observer {
 		int choice=0;
 		do{
 			if(shared.isTaskStarted()==false) {menu();
-				choice=scan.nextInt();
+				choice=readInt();
 				System.out.println();
 				switch(choice){
 				case 1:
@@ -297,7 +338,7 @@ public class WASSFederate extends SEEAbstractFederate implements Observer {
 					watsProcess();
 					break;
 				case 4:
-					System.out.println("No available interaction.");
+					larsProcess();
 					break;
 				case 5:
 					System.out.println("No available interaction.");
@@ -403,34 +444,53 @@ public class WASSFederate extends SEEAbstractFederate implements Observer {
         	sendWLMessage("WASS","LARS","PARTS_LIST_WASS",shared.getWASS().TPartstoString());
         	break;
         case "PYRO_REQUEST_LARS":
-        	int t=Integer.parseInt(message.getContent());
-        	if(t<shared.getWASS().getTrash().size()) {
-        		sendWWPMessage("WASS", "WAPS", "PYROLYSIS_REQUEST_LARS", shared.getWASS().getTrash().get(t).toString());
-    		}else if(shared.getWASS().getTrash().size()==0) {
+        	String[] li=message.getContent().split(" ");
+        	int t=Integer.parseInt(li[li.length-1].trim())-1;
+        	if(shared.getWASS().getTrash().size()==0) {
     			sendWLMessage("WASS","LARS","PYROLOSIS_CHOICE_ERROR", "No trash in storage!");
+    			shared.setTaskDone(true);
+    		}else if(t<shared.getWASS().getTrash().size()) {
+        		sendWWPMessage("WASS", "WAPS", "PYROLYSIS_REQUEST_LARS", shared.getWASS().getTrash().get(t).toString());
+        		shared.remove(t);
     		}else {
     			sendWLMessage("WASS","LARS","PYROLOSIS_CHOICE_ERROR", "Choice does not exist!");
+    			shared.setTaskDone(true);
     		}
         	break;
         case "DECOMPOSITION_REQUEST_LIST_LARS":
+        	String[] li2=message.getContent().split(" ");
+        	int num=Integer.parseInt(li2[li2.length-1].trim())-1;
         	if(shared.getWASS().getTrash().size()==0) {
         		sendWLMessage("WASS","LARS","DECOMPOSITION_CHOICE_ERROR","No trash in storage!");
-        	}else if(Integer.parseInt(message.getContent().trim())>shared.getWASS().getTrash().size()-1){
-        		sendWLMessage("WASS","LARS","DECOMPOSITION_CHOICE_ERROR","No trash in storage!");
+        		shared.setTaskDone(true);
+        	}else if(num>shared.getWASS().getTrash().size()-1){
+        		sendWLMessage("WASS","LARS","DECOMPOSITION_CHOICE_ERROR","No such choice exists!");
+        		shared.setTaskDone(true);
         	}else {
-	        	int num=Integer.parseInt(message.getContent().trim());
 	        	sendWWTMessage("WASS", "WATS", "DECOMPOSITION_REQUEST_LARS", shared.getWASS().getTrash().get(num).toString());
-	    		WASS wass=shared.getWASS();
-	    		ArrayList<Trash> t1=wass.getTrash();
-	    		t1.remove(num);
-	    		wass.settrash(t1);
-	    		shared.setWASS(wass);
-	        	}
-    		shared.setTaskStarted(true);
+	        	shared.remove(num);
+	        }
         	break;
         case "RECYCLING_REQUEST_LIST_LARS":
-        	sendWWTMessage("WASS","WATS","RECYCLING_REQUEST_LARS",message.getContent());
+        	String[] li3=message.getContent().split(" ");
+        	int num2=Integer.parseInt(li3[li3.length-1].trim())-1;
+        	sendWWTMessage("WASS","WATS","RECYCLING_REQUEST_LARS",""+num2);
         	sendWLMessage("WASS","LARS","RECYCLING_REQUEST_MATERIAL_CHECK", "Checking if materials are sufficient and if the recipe requested exists");
+        	break;
+        case "PYRO_LIST_REQUEST_LARS":
+        	ConsoleColors.logInfo("[WASS] Recieved "+message.getContent()+" from " +message.getSender());
+        	sendWLMessage("WASS","LARS","CHOOSE_WASTE_PYROLYSIS",shared.getWASS().TrashtoString());
+        	break;
+		case "DECOMPOSITION_LIST_REQUEST_LIST_LARS":
+        	ConsoleColors.logInfo("[WASS] Recieved "+message.getContent()+" from " +message.getSender());
+			sendWLMessage("WASS","LARS","CHOOSE_WASTE_DECOMPOSITION",shared.getWASS().TrashtoString());
+			break;
+		case "RECYCLING_LIST_REQUEST_LIST_LARS":
+        	ConsoleColors.logInfo("[WASS] Recieved "+message.getContent()+" from " +message.getSender());
+			sendWWTMessage("WASS","WATS","CHOOSE_RECIPE_WASS",shared.getWASS().TrashtoString());
+			break;
+        case "ENVIRONMENTAL_STATUS":
+        	ConsoleColors.logInfo("[WASS] Recieved "+message.getContent()+" from " +message.getSender());
         	break;
         default:
         	ConsoleColors.logInfo("[WASS] Unknown message type: " + message.getMessageType());
@@ -447,9 +507,12 @@ public class WASSFederate extends SEEAbstractFederate implements Observer {
     		case "RECIPE_LIST_WATS":
 	        	sendWLMessage("WASS","LARS","RECIPE_LIST_WASSL", message.getContent());
 	        	break;	
+    		case "CHOOSE_RECIPE_WATS":
+	        	sendWLMessage("WASS","LARS","CHOOSE_RECIPE", message.getContent());
+	        	break;	
 	    	case "RECIPES":
             	System.out.print("Choose the recipe you need: ");
-            	int c=scan.nextInt();
+            	int c=readInt();
             	String[] arr=message.getContent().split("\n");
             	int maxnum=Integer.parseInt(arr[arr.length-1].split("\\.")[0].trim());
             	ArrayList<Integer> indices=new ArrayList<Integer>();
@@ -623,7 +686,26 @@ public class WASSFederate extends SEEAbstractFederate implements Observer {
                 shared.setTaskDone(true);
         }
     }
+    public int readInt() {
+    	Scanner scan=new Scanner(System.in);
+    	boolean fine=true;
+    	int n=0;
+    	do {
+        	try {
+        		n=scan.nextInt();
+        		fine=true;
+        	}catch(InputMismatchException e) {
+        		fine=false;
+        		System.out.print("You need to enter a number! Enter again: ");
+        		scan.next();
+        	}
+    	}while(fine!=true);
+    return n;
+    }
 }
+
+
+
 
 class SharedData {
 	private WASS wass = null;
@@ -653,5 +735,9 @@ class SharedData {
 
 	public synchronized void setTaskDone(boolean taskDone) {
 		this.taskDone = taskDone;
+	}
+	
+	public synchronized void remove(int t) {
+		wass.remove(t);
 	}
 }

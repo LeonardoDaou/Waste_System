@@ -36,6 +36,7 @@ import hla.rti1516e.exceptions.UnsupportedCallbackModel;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Scanner;
@@ -141,7 +142,7 @@ public class WATSFederate extends SEEAbstractFederate implements Observer {
 		int choice=0;
 		do{
 				menu();
-				choice=scan.nextInt();
+				choice=readInt();
 				System.out.println();
 				switch(choice){
 				case 1:
@@ -230,6 +231,10 @@ public class WATSFederate extends SEEAbstractFederate implements Observer {
             	ConsoleColors.logInfo("[WATS] Got a request for recipe information, sending the list!");
             	sendMessage("WATS", "WASS", "RECIPE_LIST_WATS", wats.RecipestoString());
     			break;
+            case "CHOOSE_RECIPE_WASS":
+            	ConsoleColors.logInfo("[WATS] Got a request for recipe information, sending the list!");
+            	sendMessage("WATS", "WASS", "CHOOSE_RECIPE_WATS", wats.RecipestoString());
+    			break;
             case "FABRICATION_REQUEST":
             	ConsoleColors.logInfo("[WATS] Got a transformation request. Starting Fabricator!");
             	String re=wats.getRecipes().get(Integer.parseInt(message.getContent().trim())).getName();
@@ -248,11 +253,11 @@ public class WATSFederate extends SEEAbstractFederate implements Observer {
             	sendMessage("WATS","WASS","DECOMPOSITION_COMPLETE_LARS", returned_lars[0]);
             	break;
             case "RECYCLING_REQUEST_LARS":
-            	int ind=wats.search(message.getContent());
-            	if(ind==-99) {
+            	int ind=Integer.parseInt(message.getContent());
+            	if(ind>=wats.getRecipes().size()) {
             		sendMessage("WATS","WASS","RECIPE_CHOICE_ERROR","Recipe does not exist!");
             	}else {
-	            	String mats=wats.reMats(message.getContent());
+	            	String mats=wats.reMats(ind);
 	            	sendMessage("WATS","WASS","MATERIAL_CHECK",mats);
 	            }
             	break;
@@ -267,7 +272,24 @@ public class WATSFederate extends SEEAbstractFederate implements Observer {
                 ConsoleColors.logInfo("[WATS] Unknown message type: " + message.getMessageType());
         }
     }
-
+    
+    public int readInt() {
+    	Scanner scan=new Scanner(System.in);
+    	boolean fine=true;
+    	int n=0;
+    	do {
+	    	try {
+	    		n=scan.nextInt();
+	    		fine=true;
+	    	}catch(InputMismatchException e) {
+	    		fine=false;
+	    		System.out.print("You need to enter a number! Enter again: ");
+        		scan.next();
+	    	}
+    	}while(fine!=true);
+    return n;
+    }
+    
 	
 
 }

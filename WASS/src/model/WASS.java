@@ -212,7 +212,7 @@ public class WASS {
 	public String TrashtoString() {
 		String s="";
 		if(trash.size()==0) {
-			s="No materials in storage";
+			s="No trash in storage";
 		}else {
 			for(int i=0; i<trash.size();i++) {
 				int a=i+1;
@@ -229,7 +229,7 @@ public class WASS {
 	public String TPartstoString() {
 		String s="";
 		if(parts.size()==0) {
-			s="No materials in storage";
+			s="No parts in storage";
 		}else {
 			for(int i=0; i<parts.size();i++) {
 				int a=i+1;
@@ -241,6 +241,10 @@ public class WASS {
 			}
 		}
 		return s;
+	}
+	
+	public void remove(int a) {
+		trash.remove(a);
 	}
 
 	public ArrayList<TParts> getParts() {
