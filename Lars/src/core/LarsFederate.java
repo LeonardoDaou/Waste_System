@@ -2,6 +2,7 @@ package core;
 
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Scanner;
 
 import model.Lars;
 import model.LandingBeacon;
@@ -104,28 +105,28 @@ public class LarsFederate extends SEEAbstractFederate implements Observer {
     		sendWLMessage("LARS", "WASS", "MATERIALS_LIST_LARS", "Request for the material list of WASS.");
     		materialsMsgSent=true;
     	}
-    	if(!wasteMsgSent) {
+    	else if(!wasteMsgSent) {
     		sendWLMessage("LARS", "WASS", "POSSIBLE_WASTE_LIST_LARS", "Request for the wastes list of WASS.");
     		wasteMsgSent=true;
     	}
-    	if(!partsMsgSent) {
+    	else if(!partsMsgSent) {
     		sendWLMessage("LARS", "WASS", "PARTS_LIST_LARS", "Request for the parts list of WASS.");
     		partsMsgSent=true;
     	}
-    	if(!recipeMsgSent) {
+    	else if(!recipeMsgSent) {
     		sendWLMessage("LARS", "WASS", "RECIPE_LIST_LARS", "Request for the recipe list of WATS.");
     		recipeMsgSent=true;
     	}
-    	if(!pyroMsgSent) {
-    		sendWLMessage("LARS", "WASS", "PYRO_REQUEST_LARS", ""+0);
+    	else if(!pyroMsgSent) {
+    		sendWLMessage("LARS", "WASS", "PYRO_LIST_REQUEST_LARS", "Requesting waste list");
     		pyroMsgSent=true;
     	}
-    	if(!decompositionMsgSent) {
-    		sendWLMessage("LARS", "WASS", "DECOMPOSITION_REQUEST_LIST_LARS", ""+0);
+    	else if(!decompositionMsgSent) {
+    		sendWLMessage("LARS", "WASS", "DECOMPOSITION_LIST_REQUEST_LIST_LARS", "Requesting waste list");
     		decompositionMsgSent=true;
     	}
-    	if(!recyclingMsgSent) {
-    		sendWLMessage("LARS", "WASS", "RECYCLING_REQUEST_LIST_LARS", "Screws");
+    	else if(!recyclingMsgSent) {
+    		sendWLMessage("LARS", "WASS", "RECYCLING_LIST_REQUEST_LIST_LARS", "Requesting recipe list");
     		recyclingMsgSent=true;
     	}
     }
@@ -185,6 +186,7 @@ public class LarsFederate extends SEEAbstractFederate implements Observer {
     }
     
     private void handleResponses(WASSLARSMessage message) {
+    	Scanner scan=new Scanner(System.in);
     	switch(message.getMessageType()) {
 	    	case "DECOMPOSITION_COMPLETE_WASS":
 	    		ConsoleColors.logInfo("[LARS] Recieved "+message.getContent()+" from " +message.getSender());
@@ -218,6 +220,24 @@ public class LarsFederate extends SEEAbstractFederate implements Observer {
             	break;
             case "DECOMPOSITION_CHOICE_ERROR":
             	ConsoleColors.logInfo("[LARS] Recieved "+message.getContent()+" from " +message.getSender());
+            	break;
+            case "CHOOSE_RECIPE":
+            	ConsoleColors.logInfo("[LARS] Recieved "+message.getContent()+" from " +message.getSender());
+            	System.out.print("Enter the item that you want fabricated: ");
+            	int num=scan.nextInt();
+        		sendWLMessage("LARS", "WASS", "RECYCLING_REQUEST_LIST_LARS", ""+num);
+            	break;
+            case "CHOOSE_WASTE_PYROLYSIS":
+            	ConsoleColors.logInfo("[LARS] Recieved "+message.getContent()+" from " +message.getSender());
+            	System.out.print("Enter the waste that you want pyrolyzed: ");
+            	int num2=scan.nextInt();
+            	sendWLMessage("LARS", "WASS", "PYRO_REQUEST_LARS", ""+num2);
+            	break;
+            case "CHOOSE_WASTE_DECOMPOSITION":
+            	ConsoleColors.logInfo("[LARS] Recieved "+message.getContent()+" from " +message.getSender());
+            	System.out.print("Enter the item that you want decomposed: ");
+            	int num3=scan.nextInt();
+        		sendWLMessage("LARS", "WASS", "DECOMPOSITION_REQUEST_LIST_LARS", ""+num3);
             	break;
             default:
                 ConsoleColors.logInfo("[LARS] Unknown message type: " + message.getMessageType());
