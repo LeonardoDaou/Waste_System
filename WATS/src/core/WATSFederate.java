@@ -146,8 +146,7 @@ public class WATSFederate extends SEEAbstractFederate implements Observer {
 				System.out.println();
 				switch(choice){
 				case 1:
-					System.out.println();
-					wats.RecipestoString();
+					System.out.println(wats.RecipestoString());
 					System.out.println();
 					break;
 				case 2:

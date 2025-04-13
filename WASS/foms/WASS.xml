@@ -150,6 +150,33 @@
 					<semantics>Main content of the message</semantics>
 				</parameter>
 			</interactionClass>
+			<interactionClass>
+				<name>WASSERRVMessage</name>
+				<sharing>PublishSubscribe</sharing>
+				<transportation>HLAreliable</transportation>
+				<order>Receive</order>
+				<semantics>General communication between federates</semantics>
+				<parameter>
+					<name>Sender</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Federate sending the message</semantics>
+				</parameter>
+				<parameter>
+					<name>Receiver</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Federate receiving the message</semantics>
+				</parameter>
+				<parameter>
+					<name>MessageType</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Message type identifier</semantics>
+				</parameter>
+				<parameter>
+					<name>Content</name>
+					<dataType>HLAunicodeString</dataType>
+					<semantics>Main content of the message</semantics>
+				</parameter>
+			</interactionClass>
 		</interactionClass>
 	</interactions>
 

@@ -4,7 +4,7 @@ import skf.coder.HLAunicodeStringCoder;
 import skf.model.interaction.annotations.InteractionClass;
 import skf.model.interaction.annotations.Parameter;
 
-@InteractionClass(name = "WASSWATSMessage")
+@InteractionClass(name = "WASSERRVMessage")
 public class WASSERRVMessage {
 
     @Parameter(name = "Sender", coder = HLAunicodeStringCoder.class)

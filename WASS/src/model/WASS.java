@@ -30,6 +30,9 @@ public class WASS {
 	
 	//private ArrayList<Transformed> transformed = new ArrayList<tranformed>();
 	
+	
+	private ArrayList<Conversion> conv=new ArrayList<Conversion>();
+	
 	@Attribute(name = "position", coder = HLAPositionCoder.class)
 	private Position position = null;
 	
@@ -48,8 +51,40 @@ public class WASS {
 		this.materials= readMaterials();
 		this.trash=readTrash();
 		this.setParts(readParts());
+		this.setConv(readConversions());
 	}
 	
+	private ArrayList<Conversion> readConversions() {
+		ArrayList<Conversion> n = new ArrayList<Conversion>();
+		ArrayList<String>mat=new ArrayList<String>();
+		ArrayList<Integer>wei=new ArrayList<Integer>();
+		mat.add("Iron");
+		wei.add(10);
+		n.add(new Conversion("Body",mat,wei));
+		mat=new ArrayList<String>();
+		wei=new ArrayList<Integer>();
+		mat.add("Iron");
+		mat.add("Rubber");
+		wei.add(5);
+		wei.add(15);
+		n.add(new Conversion("Wheel",mat,wei));
+		mat=new ArrayList<String>();
+		wei=new ArrayList<Integer>();
+		mat.add("Iron");
+		mat.add("Plastic");
+		wei.add(5);
+		wei.add(5);
+		n.add(new Conversion("Board",mat,wei));
+		mat=new ArrayList<String>();
+		wei=new ArrayList<Integer>();
+		mat.add("Copper");
+		mat.add("Plastic");
+		wei.add(5);
+		wei.add(15);
+		n.add(new Conversion("Battery",mat,wei));
+		return n;
+	}
+
 	public ArrayList<Material> readMaterials() {
 		ArrayList<Material> n = new ArrayList<Material>();
 		n.add(new Material("Steel",100));
@@ -191,6 +226,23 @@ public class WASS {
 		}
 		return index;
     }
+    
+    public Conversion searchConversions(String n) {
+    	int index=-99;
+		boolean found=false;
+		for(int i=0; i<conv.size(); i++) {
+			if(conv.get(i).getPart().equalsIgnoreCase(n)) {
+				found=true;
+				index=i;
+				System.out.println("Conversion Found!");
+				break;
+			}
+		}
+		if(found==false) {
+			ConsoleColors.logWarning(n+" not found");
+		}
+		return conv.get(index);
+    }
 	
 	public String MaterialstoString() {
 		String s="";
@@ -253,6 +305,31 @@ public class WASS {
 
 	public void setParts(ArrayList<TParts> parts) {
 		this.parts = parts;
+	}
+
+	public ArrayList<Conversion> getConv() {
+		return conv;
+	}
+
+	public void setConv(ArrayList<Conversion> conv) {
+		this.conv = conv;
+	}
+
+	public String ConversiontoString() {
+		String s="";
+		if(conv.size()==0) {
+			s="No conversions available";
+		}else {
+			for(int i=0; i<conv.size();i++) {
+				int a=i+1;
+				if(i!=conv.size()-1) {
+					s+=a+". "+conv.get(i).toString()+"\n";
+				}else {
+					s+=a+". "+conv.get(i).toString();
+				}
+			}
+		}
+		return s;
 	}
 	
 

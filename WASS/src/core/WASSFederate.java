@@ -44,12 +44,14 @@ import java.util.Scanner;
 import model.WASS;
 import model.WAPS;
 import model.WATS;
+import model.Conversion;
 import model.Material;
 import model.Position;
 import model.TParts;
 import model.Trash;
 import interactions.ConsoleColors;
 import interactions.FederateMessage;
+import interactions.WASSERRVMessage;
 import interactions.WASSLARSMessage;
 import interactions.WASSWAPSMessage;
 import interactions.WASSWATSMessage;
@@ -77,6 +79,7 @@ public class WASSFederate extends SEEAbstractFederate implements Observer {
 	private ReferenceFrame currentReferenceFrame;
     private ModeTransitionRequest mtr = new ModeTransitionRequest();
     private FederateMessage message = new FederateMessage();
+    private WASSERRVMessage wemessage = new WASSERRVMessage();
     private WASSLARSMessage wlmessage = new WASSLARSMessage();
     private WASSWATSMessage wwtmessage = new WASSWATSMessage();
     private WASSWAPSMessage wwpmessage = new WASSWAPSMessage();
@@ -129,7 +132,9 @@ public class WASSFederate extends SEEAbstractFederate implements Observer {
             super.publishInteraction(wlmessage);
             super.publishInteraction(wwpmessage);
             super.publishInteraction(wwtmessage);
+            super.publishInteraction(wemessage);
             super.subscribeInteraction((Class<? extends InteractionClass>) WASSLARSMessage.class);
+            super.subscribeInteraction((Class<? extends InteractionClass>) WASSERRVMessage.class);
             super.subscribeInteraction((Class<? extends InteractionClass>) WASSWAPSMessage.class);
             super.subscribeInteraction((Class<? extends InteractionClass>) WASSWATSMessage.class);
 
@@ -167,8 +172,7 @@ public class WASSFederate extends SEEAbstractFederate implements Observer {
 							+"2. WAPS\n"
 							+"3. WATS\n"
 							+"4. LARS\n"
-							+"5. ERRV\n"
-							+"6. Exit\n"
+							+"5. Exit\n"
 							+"---------------------------------\n"
 							+"Enter your choice:";
 		System.out.print(s);
@@ -341,9 +345,6 @@ public class WASSFederate extends SEEAbstractFederate implements Observer {
 					larsProcess();
 					break;
 				case 5:
-					System.out.println("No available interaction.");
-					break;
-				case 6:
 					System.out.println("Shutting down");
 					System.exit(1);
 					break;
@@ -355,7 +356,7 @@ public class WASSFederate extends SEEAbstractFederate implements Observer {
 				shared.setTaskStarted(false);
 				shared.setTaskDone(false);
 			}
-    	}while(choice!=6);
+    	}while(choice!=5);
     }
 
     @Override
@@ -377,6 +378,11 @@ public class WASSFederate extends SEEAbstractFederate implements Observer {
             System.out.println();
         	ConsoleColors.logInfo("[WASS] Received message: " + msg.getMessageType() + " :\n" + msg.getContent());
         	handleResponses((WASSWATSMessage) arg);
+    	}else if(arg instanceof WASSERRVMessage) {
+    		WASSERRVMessage msg = (WASSERRVMessage) arg;
+            System.out.println();
+        	ConsoleColors.logInfo("[WASS] Received message: " + msg.getMessageType() + " :\n" + msg.getContent());
+        	handleResponses((WASSERRVMessage) arg);
     	}else if (arg instanceof ReferenceFrame) {
             this.currentReferenceFrame = (ReferenceFrame) arg;
             //ConsoleColors.logStatus("[DEBUG] WASS received Reference Frame update.");
@@ -427,6 +433,49 @@ public class WASSFederate extends SEEAbstractFederate implements Observer {
             ConsoleColors.logError("[WASS] Failed to send message: " + e.getMessage());
             shared.setTaskDone(true);
         }
+    }
+    
+    private void sendWEMessage(String sender, String receiver, String type, String content) {
+        this.wemessage.setSender(sender);
+        this.wemessage.setReceiver(receiver);
+        this.wemessage.setMessageType(type);
+        this.wemessage.setContent(content);
+
+        try {
+            super.updateInteraction(this.wemessage);
+            ConsoleColors.logInfo("[WASS] Sent message to " + receiver+":\n" + content);
+        } catch (Exception e) {
+            ConsoleColors.logError("[WASS] Failed to send message: " + e.getMessage());
+            shared.setTaskDone(true);
+        }
+    }
+    
+    private void handleResponses(WASSERRVMessage message) {
+    	switch(message.getMessageType()){
+    	case "PART":
+    		String[] con=message.getContent().trim().split(",");
+    		Conversion request=shared.getWASS().searchConversions(con[0]);
+    		WASS wass=shared.getWASS();
+    		ArrayList<Trash> t=wass.getTrash();
+    		String mats="";
+    		int co=Integer.parseInt(con[1])*2;
+    		int ho=Integer.parseInt(con[1])*2;
+    		String waste="Carbon Dioxide, "+co+"; Water, "+ho;
+    		for(int i=0;i<request.getMaterials().size();i++) {
+    			if(i==request.getMaterials().size()-1) {
+    				int w=request.getWeight().get(i)*Integer.parseInt(con[1]);
+	    			mats+=request.getMaterials().get(i)+", "+w;
+    			}else {
+	    			int w=request.getWeight().get(i)*Integer.parseInt(con[1]);
+	    			mats+=request.getMaterials().get(i)+", "+w+";";
+    			}
+    		}
+    		t.add(new Trash(con[0],mats,Integer.parseInt(con[1]),waste));
+    		sendWEMessage("WASS","ERRV","PART_RECEIVED",con[0]+ " part received and stored.");
+    		break;
+    	default:
+    		ConsoleColors.logInfo("[WASS] Unknown message type: " + message.getMessageType());
+    	}
     }
     private void handleResponses(WASSLARSMessage message) {
     	Scanner scan=new Scanner(System.in);

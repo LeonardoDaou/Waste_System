@@ -46,6 +46,7 @@ public class WATS {
 		ArrayList<Recipes> n = new ArrayList<Recipes>();
 		n.add(new Recipes("Bottle","Plastic, 10"));
 		n.add(new Recipes("Screw","Iron, 2; Plastic, 1"));
+		n.add(new Recipes("Wire","Copper, 2"));
 		return n;
 	}
 	
